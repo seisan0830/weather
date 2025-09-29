@@ -1,11 +1,16 @@
 "use client";
 
 import React from "react";
+// パッケージは型を提供しないため、最小限の型を与える
+import japan from "@svg-maps/japan";
 
-type PrefectureRegion = {
-  code: string;
-  nameJa: string;
-  d: string; // SVG path
+type JapanMapData = {
+  viewBox: string;
+  locations: Array<{
+    id: string;
+    name: string;
+    path: string;
+  }>;
 };
 
 type PrefectureMapProps = {
@@ -13,65 +18,100 @@ type PrefectureMapProps = {
   onSelect: (code: string) => void;
 };
 
-// 簡易版の日本地図パス（主要都道府県のシンボル）。精密な地図は後で差し替え可能。
-const PREF_PATHS: PrefectureRegion[] = [
-  {
-    code: "hokkaido",
-    nameJa: "北海道",
-    d: "M50,10 L90,20 L80,40 L60,35 L45,25 Z",
-  },
-  {
-    code: "aomori",
-    nameJa: "青森",
-    d: "M55,45 L70,48 L68,60 L52,58 Z",
-  },
-  {
-    code: "tokyo",
-    nameJa: "東京",
-    d: "M85,85 L92,86 L90,94 L83,93 Z",
-  },
-  {
-    code: "kyoto",
-    nameJa: "京都",
-    d: "M70,78 L78,78 L78,84 L70,84 Z",
-  },
-  {
-    code: "osaka",
-    nameJa: "大阪",
-    d: "M74,85 L80,85 L80,90 L74,90 Z",
-  },
-  {
-    code: "okinawa",
-    nameJa: "沖縄",
-    d: "M20,110 L26,112 L24,118 L18,116 Z",
-  },
-];
+type Location = {
+  id: string; // e.g. JP-01 for 北海道
+  name: string; // English name
+  path: string; // SVG path 'd'
+};
 
 export function PrefectureMap({ visited, onSelect }: PrefectureMapProps) {
+  const mapData: JapanMapData = japan as unknown as JapanMapData;
+  const viewBox = mapData.viewBox ?? "0 0 1000 1000";
+  const locations: Location[] = mapData.locations.map((l) => ({
+    id: l.id,
+    name: l.name,
+    path: l.path,
+  }));
+
+  // id をアプリ内コードに変換（JP-XX → prefecture code）。
+  const idToCode = (id: string) => {
+    // JP-01 = hokkaido, JP-13 = tokyo, JP-26 = kyoto, JP-27 = osaka, JP-47 = okinawa
+    const map: Record<string, string> = {
+      "JP-01": "hokkaido",
+      "JP-02": "aomori",
+      "JP-03": "iwate",
+      "JP-04": "miyagi",
+      "JP-05": "akita",
+      "JP-06": "yamagata",
+      "JP-07": "fukushima",
+      "JP-08": "ibaraki",
+      "JP-09": "tochigi",
+      "JP-10": "gunma",
+      "JP-11": "saitama",
+      "JP-12": "chiba",
+      "JP-13": "tokyo",
+      "JP-14": "kanagawa",
+      "JP-15": "niigata",
+      "JP-16": "toyama",
+      "JP-17": "ishikawa",
+      "JP-18": "fukui",
+      "JP-19": "yamanashi",
+      "JP-20": "nagano",
+      "JP-21": "gifu",
+      "JP-22": "shizuoka",
+      "JP-23": "aichi",
+      "JP-24": "mie",
+      "JP-25": "shiga",
+      "JP-26": "kyoto",
+      "JP-27": "osaka",
+      "JP-28": "hyogo",
+      "JP-29": "nara",
+      "JP-30": "wakayama",
+      "JP-31": "tottori",
+      "JP-32": "shimane",
+      "JP-33": "okayama",
+      "JP-34": "hiroshima",
+      "JP-35": "yamaguchi",
+      "JP-36": "tokushima",
+      "JP-37": "kagawa",
+      "JP-38": "ehime",
+      "JP-39": "kochi",
+      "JP-40": "fukuoka",
+      "JP-41": "saga",
+      "JP-42": "nagasaki",
+      "JP-43": "kumamoto",
+      "JP-44": "oita",
+      "JP-45": "miyazaki",
+      "JP-46": "kagoshima",
+      "JP-47": "okinawa",
+    };
+    return map[id] ?? id;
+  };
+
   return (
     <svg
-      viewBox="0 0 120 130"
+      viewBox={viewBox}
       role="img"
       aria-label="日本地図"
-      className="w-full max-w-[540px] h-auto select-none"
+      className="w-full max-w-[900px] h-auto select-none"
     >
-      <title>日本地図（簡易）</title>
-      <rect x="0" y="0" width="120" height="130" fill="transparent" />
-      {PREF_PATHS.map((p) => {
-        const isVisited = visited.has(p.code);
-        const fill = isVisited ? "#60a5fa" : "#e5e7eb"; // visited: blue-400, default: gray-200
-        const stroke = isVisited ? "#2563eb" : "#9ca3af"; // visited: blue-600
+      <title>日本地図</title>
+      {locations.map((loc) => {
+        const code = idToCode(loc.id);
+        const isVisited = visited.has(code);
+        const fill = isVisited ? "#60a5fa" : "#e5e7eb";
+        const stroke = isVisited ? "#2563eb" : "#9ca3af";
         return (
           <path
-            key={p.code}
-            d={p.d}
+            key={loc.id}
+            d={loc.path}
             fill={fill}
             stroke={stroke}
-            strokeWidth={0.8}
+            strokeWidth={1}
             className="cursor-pointer transition-colors hover:fill-blue-300"
-            onClick={() => onSelect(p.code)}
+            onClick={() => onSelect(code)}
           >
-            <title>{p.nameJa}</title>
+            <title>{loc.name}</title>
           </path>
         );
       })}

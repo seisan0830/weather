@@ -34,22 +34,30 @@ export function PrefectureDetailsSheet({ open, onOpenChange, prefecture, isVisit
           <div className="space-y-6 mt-4">
             <div>
               <div className="text-sm text-muted-foreground">Famous Spots</div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {prefecture.famousSpots.map((s) => (
-                  <Badge key={s} variant="secondary">{s}</Badge>
-                ))}
-              </div>
+              {prefecture.famousSpots.length === 0 ? (
+                <div className="mt-2 text-sm text-muted-foreground">準備中…</div>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {prefecture.famousSpots.map((s) => (
+                    <Badge key={s} variant="secondary">{s}</Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Separator />
 
             <div>
               <div className="text-sm text-muted-foreground">Foods</div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {prefecture.foods.map((f) => (
-                  <Badge key={f}>{f}</Badge>
-                ))}
-              </div>
+              {prefecture.foods.length === 0 ? (
+                <div className="mt-2 text-sm text-muted-foreground">準備中…</div>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {prefecture.foods.map((f) => (
+                    <Badge key={f}>{f}</Badge>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

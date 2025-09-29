@@ -14,7 +14,7 @@ export function useVisitedPrefectures() {
       if (!raw) return;
       const arr: string[] = JSON.parse(raw);
       setVisited(new Set(arr));
-    } catch (_e) {
+    } catch {
       // 破損時は無視
     }
   }, []);
@@ -24,7 +24,7 @@ export function useVisitedPrefectures() {
     try {
       if (typeof window === "undefined") return;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(visited)));
-    } catch (_e) {}
+    } catch {}
   }, [visited]);
 
   const actions = useMemo(() => {
@@ -40,7 +40,7 @@ export function useVisitedPrefectures() {
     const clearAll = () => setVisited(new Set());
 
     const markMany = (codes: string[]) => {
-      setVisited((_) => new Set(codes));
+      setVisited(() => new Set(codes));
     };
 
     return { toggle, clearAll, markMany };
