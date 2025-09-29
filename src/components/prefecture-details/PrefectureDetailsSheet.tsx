@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -37,10 +38,29 @@ export function PrefectureDetailsSheet({ open, onOpenChange, prefecture, isVisit
               {prefecture.famousSpots.length === 0 ? (
                 <div className="mt-2 text-sm text-muted-foreground">準備中…</div>
               ) : (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {prefecture.famousSpots.map((s) => (
-                    <Badge key={s} variant="secondary">{s}</Badge>
-                  ))}
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {prefecture.famousSpots.map((s, idx) => {
+                    if (typeof s === "string") {
+                      return (
+                        <div key={`${s}-${idx}`} className="border rounded-md p-3 text-sm">
+                          <div className="font-medium">{s}</div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={`${s.title}-${idx}`} className="border rounded-md overflow-hidden">
+                        <div className="relative w-full h-40">
+                          <Image src={s.imageUrl} alt={s.title} fill className="object-cover" />
+                        </div>
+                        <div className="p-3">
+                          <div className="font-medium">{s.title}</div>
+                          {s.description ? (
+                            <div className="text-xs text-muted-foreground mt-1">{s.description}</div>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -52,9 +72,53 @@ export function PrefectureDetailsSheet({ open, onOpenChange, prefecture, isVisit
               {prefecture.foods.length === 0 ? (
                 <div className="mt-2 text-sm text-muted-foreground">準備中…</div>
               ) : (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {prefecture.foods.map((f) => (
-                    <Badge key={f}>{f}</Badge>
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {prefecture.foods.map((f, idx) => {
+                    if (typeof f === "string") {
+                      return (
+                        <div key={`${f}-${idx}`} className="border rounded-md p-3 text-sm">
+                          <div className="font-medium">{f}</div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={`${f.title}-${idx}`} className="border rounded-md overflow-hidden">
+                        <div className="relative w-full h-40">
+                          <Image src={f.imageUrl} alt={f.title} fill className="object-cover" />
+                        </div>
+                        <div className="p-3">
+                          <div className="font-medium">{f.title}</div>
+                          {f.description ? (
+                            <div className="text-xs text-muted-foreground mt-1">{f.description}</div>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            <div>
+              <div className="text-sm text-muted-foreground">Stays</div>
+              {!prefecture.stays || prefecture.stays.length === 0 ? (
+                <div className="mt-2 text-sm text-muted-foreground">準備中…</div>
+              ) : (
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {prefecture.stays.map((h, idx) => (
+                    <a key={`${h.title}-${idx}`} href={h.url} target="_blank" rel="noreferrer" className="border rounded-md overflow-hidden hover:shadow-sm transition">
+                      <div className="relative w-full h-40">
+                        <Image src={h.imageUrl} alt={h.title} fill className="object-cover" />
+                      </div>
+                      <div className="p-3">
+                        <div className="font-medium">{h.title}</div>
+                        {h.description ? (
+                          <div className="text-xs text-muted-foreground mt-1">{h.description}</div>
+                        ) : null}
+                      </div>
+                    </a>
                   ))}
                 </div>
               )}
